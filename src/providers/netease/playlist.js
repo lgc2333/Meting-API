@@ -1,4 +1,5 @@
 import { request } from './util.js'
+import { map_song_list } from "./util.js"
 
 export const get_playlist = async (id, cookie = '') => {
     const data = {
@@ -7,7 +8,7 @@ export const get_playlist = async (id, cookie = '') => {
         s: 8,
     }
     //不放在data里面避免请求带上无用的数据
-    let limit = 0 || Infinity
+    let limit = 200 || Infinity
     let offset = 0 || 0
 
     let res = await request('POST', `https://music.163.com/api/v6/playlist/detail`, data, { crypto: 'api', })
@@ -31,13 +32,7 @@ export const get_playlist = async (id, cookie = '') => {
         { crypto: 'weapi' }
     )
 
-    res = res.songs.map(song => ({
-        title: song.name,
-        author: song.ar.reduce((i, v) => ((i ? i + " / " : i) + v.name), ''),
-        pic: song.al.picUrl,
-        url: song.id,
-        lrc: song.id
-    }))
+    res = map_song_list(res)
 
     return res
 
